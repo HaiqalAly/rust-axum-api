@@ -5,6 +5,7 @@ use tower_http::trace::TraceLayer;
 
 mod models;
 mod handlers;
+mod error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
