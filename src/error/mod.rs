@@ -1,6 +1,6 @@
 use axum::{
     http::StatusCode,
-    response::{IntoResponse, Response}
+    response::{IntoResponse, Response},
 };
 
 #[derive(Debug)]
@@ -18,7 +18,8 @@ impl IntoResponse for AppError {
 }
 
 impl<E> From<E> for AppError
-where E: Into<anyhow::Error>,
+where
+    E: Into<anyhow::Error>,
 {
     fn from(err: E) -> Self {
         Self(err.into())
