@@ -1,8 +1,11 @@
-use axum::Json;
+use std::sync::Arc;
+
+use axum::{Json, extract::State, extract::Query};
 use tracing::info;
 
+use crate::AppState;
 use crate::error::AppError;
-use crate::models::HealthResponse;
+use crate::models::{HealthResponse, Search, SearchQuery};
 
 // Handler that respond with static string
 pub async fn root() -> &'static str {
@@ -18,6 +21,27 @@ pub async fn health() -> Result<Json<HealthResponse>, AppError> {
     };
 
     Ok(Json(response))
+}
+
+// Search query for the fst file
+pub async fn search_handler(
+    State(state): State<Arc<AppState>>,
+    Query(params): Query<Search>
+) -> Json<Vec<SearchQuery>> {
+    let query = params.q.to_lowercase();
+    let query = query.trim();
+
+    let mut result = Vec::new();
+
+    if let Some(score_value) = state.fst_index.get(query.as_bytes()) {
+        result.push(SearchQuery {
+            found: query.to_string(),
+            score: score_value.to_string(),
+            exist: true
+        });
+    }
+
+    Json(result)
 }
 
 // Graceful shutdown
