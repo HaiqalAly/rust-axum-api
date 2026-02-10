@@ -1,11 +1,11 @@
-use std::time::Duration;
 use std::fs;
+use std::time::Duration;
 
-use std::sync::Arc;
 use fst::Map;
+use std::sync::Arc;
 
-use sqlx::postgres::PgPoolOptions;
 use axum::{Router, http::StatusCode, routing::get};
+use sqlx::postgres::PgPoolOptions;
 use tokio::net::TcpListener;
 use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -17,7 +17,7 @@ mod models;
 // Move to a separate state folder/file later
 pub struct AppState {
     pub db: sqlx::PgPool,
-    pub fst_index: Arc<Map<Vec<u8>>>
+    pub fst_index: Arc<Map<Vec<u8>>>,
 }
 
 #[tokio::main]
@@ -57,7 +57,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         fst_index: fst_map,
     });
     tracing::info!("FST dictionary loaded successfully");
-
 
     // Build the app route
     let app = Router::new()

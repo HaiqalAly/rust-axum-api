@@ -15,5 +15,5 @@ pub struct Search {
 pub struct SearchQuery {
     pub found: String,
     pub score: String,
-    pub exist: bool
+    pub exist: bool,
 }

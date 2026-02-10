@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State, extract::Query};
+use axum::{Json, extract::Query, extract::State};
 use tracing::info;
 
 use crate::AppState;
@@ -26,7 +26,7 @@ pub async fn health() -> Result<Json<HealthResponse>, AppError> {
 // Search query for the fst file
 pub async fn search_handler(
     State(state): State<Arc<AppState>>,
-    Query(params): Query<Search>
+    Query(params): Query<Search>,
 ) -> Json<Vec<SearchQuery>> {
     let query = params.q.to_lowercase();
     let query = query.trim();
@@ -37,7 +37,7 @@ pub async fn search_handler(
         result.push(SearchQuery {
             found: query.to_string(),
             score: score_value.to_string(),
-            exist: true
+            exist: true,
         });
     }
 
