@@ -9,6 +9,7 @@ axum = "0.8.8"
 chrono = { version = "0.4.43", features = ["serde"] }
 dotenvy = "0.15.7"
 fst = {version = "0.4.7", features = ["levenshtein"]}
+memmap2 = "0.9.9"
 serde = { version = "1.0.228", features = ["derive"] }
 sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio", "chrono"] }
 tokio = { version = "1.49.0", features = ["full"] }
