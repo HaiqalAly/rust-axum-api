@@ -2,8 +2,8 @@ use std::collections::BinaryHeap;
 use std::fs;
 use std::sync::Arc;
 
+use fst::{IntoStreamer, Map, Streamer, automaton::Levenshtein};
 use memmap2::Mmap;
-use fst::{Map, automaton::Levenshtein, IntoStreamer, Streamer};
 
 pub mod error;
 pub mod handlers;
@@ -19,9 +19,7 @@ pub struct AppState {
 pub fn load_fst() -> Result<Arc<Map<Mmap>>, Box<dyn std::error::Error>> {
     // Loading the fst
     let data = fs::File::open("data/dict.fst")?;
-    let mmap = unsafe {
-        Mmap::map(&data)?
-    };
+    let mmap = unsafe { Mmap::map(&data)? };
     let map = Map::new(mmap)?;
     let fst_map = Arc::new(map);
 
@@ -45,7 +43,7 @@ impl Ord for SearchResult {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         // In a BinaryHeap (MaxHeap), pop() removes the Greatest item.
         // We want to KEEP the best items and pop the worst.
-        
+
         // 1. Exact Match: Non-exact is "Worse" (Greater)
         other
             .is_exact
@@ -92,7 +90,7 @@ pub fn perform_search(
             heap.pop();
         }
     }
-    
+
     let top_10: Vec<_> = heap.into_sorted_vec();
 
     // Convert to SearchQuery results

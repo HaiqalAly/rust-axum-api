@@ -1,11 +1,12 @@
-use std::sync::Arc;
+use axum::Json;
 
-use axum::{Json, extract::Query, extract::State};
-use tracing::info;
-
-use crate::AppState;
 use crate::error::AppError;
-use crate::models::{HealthResponse, Search, SearchHistory, SearchQuery};
+use crate::models::HealthResponse;
+
+mod graceful_shutdown;
+mod search;
+pub use graceful_shutdown::shutdown_signal;
+pub use search::{search_handler, search_history};
 
 // Handler that respond with static string
 pub async fn root() -> &'static str {
@@ -21,78 +22,4 @@ pub async fn health() -> Result<Json<HealthResponse>, AppError> {
     };
 
     Ok(Json(response))
-}
-
-// Search query for the fst file
-pub async fn search_handler(
-    State(state): State<Arc<AppState>>,
-    Query(params): Query<Search>,
-) -> Json<Vec<SearchQuery>> {
-    let query = params.q.trim().to_string();
-
-    // Use the search logic from lib.rs with BinaryHeap
-    let fst_index = Arc::clone(&state.fst_index);
-    let query_for_search = query.clone();
-    let result = tokio::task::spawn_blocking(move || {crate::perform_search(&fst_index, &query_for_search, 1)})
-    .await
-    .unwrap_or_default();
-
-    // Log search (way to justify setting up database for now x_x)
-    let db = state.db.clone();
-    let log_query = query.clone();
-    let has_results = !result.is_empty();
-    
-    tokio::spawn(async move {
-        sqlx::query!(
-            "INSERT INTO search_history (query, found) VALUES ($1, $2)",
-            log_query,
-            has_results
-        )
-        .execute(&db)
-        .await
-        .ok();
-    });
-
-    Json(result)
-}
-
-// Search history
-pub async fn search_history(
-    State(state): State<Arc<AppState>>,
-) -> Result<Json<Vec<SearchHistory>>, AppError> {
-    let history = sqlx::query_as!(
-        SearchHistory,
-        "SELECT id, query, found, searched_at FROM search_history ORDER BY searched_at DESC LIMIT 100"
-    )
-    .fetch_all(&state.db)
-    .await?;
-
-    Ok(Json(history))
-}
-
-// Graceful shutdown
-pub async fn shutdown_signal() {
-    let ctrl_c = async {
-        tokio::signal::ctrl_c()
-            .await
-            .expect("failed to install Ctrl+C handler");
-    };
-
-    #[cfg(unix)]
-    let terminate = async {
-        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
-            .expect("failed to install signal handler")
-            .recv()
-            .await;
-    };
-
-    #[cfg(not(unix))]
-    let terminate = std::future::pending::<()>();
-
-    tokio::select! {
-        _ = ctrl_c => {},
-        _ = terminate => {},
-    }
-
-    info!("Signal received, starting graceful shutdown...");
 }

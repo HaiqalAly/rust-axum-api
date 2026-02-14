@@ -1,5 +1,5 @@
-use std::time::Duration;
 use std::sync::Arc;
+use std::time::Duration;
 
 use axum::{Router, http::StatusCode, routing::get};
 use sqlx::postgres::PgPoolOptions;
@@ -7,7 +7,7 @@ use tokio::net::TcpListener;
 use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use rust_api_axum::{AppState, load_fst, handlers};
+use rust_api_axum::{AppState, handlers, load_fst};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
