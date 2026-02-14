@@ -1,27 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
+
+mod search_models;
+pub use search_models::{Search, SearchHistory, SearchQuery};
 
 #[derive(Serialize, Debug)]
 pub struct HealthResponse {
     pub status: &'static str,
     pub version: &'static str,
-}
-
-#[derive(Deserialize)]
-pub struct Search {
-    pub q: String,
-}
-
-#[derive(Serialize)]
-pub struct SearchQuery {
-    pub found: String,
-    pub score: String,
-    pub exist: bool,
-}
-
-#[derive(Serialize)]
-pub struct SearchHistory {
-    pub id: i32,
-    pub query: String,
-    pub found: bool,
-    pub searched_at: Option<chrono::NaiveDateTime>,
 }
