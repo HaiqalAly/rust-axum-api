@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 mod search_models;
-pub use search_models::{Search, SearchHistory, SearchQuery};
+pub use search_models::{Search, SearchQuery};
 
 #[derive(Serialize, Debug)]
 pub struct HealthResponse {

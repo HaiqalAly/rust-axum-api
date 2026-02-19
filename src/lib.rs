@@ -12,7 +12,6 @@ pub mod models;
 use models::SearchQuery;
 
 pub struct AppState {
-    pub db: sqlx::PgPool,
     pub fst_index: Arc<Map<Mmap>>,
 }
 

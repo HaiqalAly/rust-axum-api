@@ -6,7 +6,7 @@ use crate::models::HealthResponse;
 mod graceful_shutdown;
 mod search;
 pub use graceful_shutdown::shutdown_signal;
-pub use search::{search_handler, search_history};
+pub use search::search_handler;
 
 // Handler that respond with static string
 pub async fn root() -> &'static str {

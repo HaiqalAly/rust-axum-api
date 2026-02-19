@@ -11,11 +11,3 @@ pub struct SearchQuery {
     pub score: String,
     pub exist: bool,
 }
-
-#[derive(Serialize)]
-pub struct SearchHistory {
-    pub id: i32,
-    pub query: String,
-    pub found: bool,
-    pub searched_at: Option<chrono::NaiveDateTime>,
-}
